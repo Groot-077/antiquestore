@@ -5,14 +5,27 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function ContactUs() {
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
+  const [sending, setSending] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("Message sent! We'll get back to you soon.");
-    setForm({ name: "", email: "", subject: "", message: "" });
+    setSending(true);
+    try {
+      const { error } = await supabase.functions.invoke("send-contact-email", {
+        body: form,
+      });
+      if (error) throw error;
+      toast.success("Message sent! We'll get back to you soon.");
+      setForm({ name: "", email: "", subject: "", message: "" });
+    } catch {
+      toast.error("Failed to send message. Please try again.");
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -44,12 +57,14 @@ export default function ContactUs() {
               <label className="text-sm font-medium block mb-1.5">Message</label>
               <Textarea value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} required rows={5} />
             </div>
-            <Button type="submit" className="w-full rounded-full">Send Message</Button>
+            <Button type="submit" className="w-full rounded-full" disabled={sending}>
+              {sending ? "Sending..." : "Send Message"}
+            </Button>
           </form>
 
           <div className="space-y-6">
             {[
-              { icon: Mail, title: "Email", line1: "support@antiquestore.com", line2: "We respond within 24 hours" },
+              { icon: Mail, title: "Email", line1: "jaipalprakash30102005@gmail.com", line2: "We respond within 24 hours" },
               { icon: MapPin, title: "Location", line1: "Mumbai, Maharashtra", line2: "India" },
               { icon: Phone, title: "Phone", line1: "+91 22 1234 5678", line2: "Mon–Sat, 10am–6pm IST" },
             ].map((c) => (
