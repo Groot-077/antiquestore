@@ -1,4 +1,4 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { ShoppingCart, Heart, User, Menu, X, Search, Shield, Store, LogOut } from "lucide-react";
@@ -13,6 +13,17 @@ export default function Layout({ children }: { children: ReactNode }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [subscribeEmail, setSubscribeEmail] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      supabase.rpc("has_role", { _user_id: user.id, _role: "admin" }).then(({ data }) => {
+        setIsAdmin(!!data);
+      });
+    } else {
+      setIsAdmin(false);
+    }
+  }, [user]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,9 +85,11 @@ export default function Layout({ children }: { children: ReactNode }) {
                   <Button variant="ghost" size="icon" onClick={() => navigate("/seller")} className="hover:bg-muted">
                     <Store className="h-5 w-5" />
                   </Button>
-                  <Button variant="ghost" size="icon" onClick={() => navigate("/admin")} className="hover:bg-muted">
-                    <Shield className="h-5 w-5" />
-                  </Button>
+                  {isAdmin && (
+                    <Button variant="ghost" size="icon" onClick={() => navigate("/admin")} className="hover:bg-muted">
+                      <Shield className="h-5 w-5" />
+                    </Button>
+                  )}
                   <Button variant="ghost" size="icon" onClick={() => { signOut(); navigate("/"); }} className="hover:bg-muted">
                     <LogOut className="h-5 w-5" />
                   </Button>
@@ -117,9 +130,11 @@ export default function Layout({ children }: { children: ReactNode }) {
                   <Button variant="ghost" className="justify-start" onClick={() => { navigate("/seller"); setMobileMenuOpen(false); }}>
                     <Store className="h-4 w-4 mr-2" /> Sell
                   </Button>
-                  <Button variant="ghost" className="justify-start" onClick={() => { navigate("/admin"); setMobileMenuOpen(false); }}>
-                    <Shield className="h-4 w-4 mr-2" /> Admin
-                  </Button>
+                  {isAdmin && (
+                    <Button variant="ghost" className="justify-start" onClick={() => { navigate("/admin"); setMobileMenuOpen(false); }}>
+                      <Shield className="h-4 w-4 mr-2" /> Admin
+                    </Button>
+                  )}
                   <Button variant="ghost" className="justify-start" onClick={() => { signOut(); navigate("/"); setMobileMenuOpen(false); }}>
                     <LogOut className="h-4 w-4 mr-2" /> Sign Out
                   </Button>
