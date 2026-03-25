@@ -10,7 +10,7 @@ It supports **buyers, sellers, and admins**, with features like product listings
 ## 🌐 Live Demo
 
 🚀 Website URL:
-👉 http://localhost:5000
+👉 https://antiquestore.lovable.app/
 
 Replace this with your deployed link (e.g., Render / Railway / AWS / Vercel)
 
