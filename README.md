@@ -12,7 +12,6 @@ It supports **buyers, sellers, and admins**, with features like product listings
 🚀 Website URL:
 👉 https://antiquestore.lovable.app/
 
-Replace this with your deployed link (e.g., Render / Railway / AWS / Vercel)
 
 ---
 
